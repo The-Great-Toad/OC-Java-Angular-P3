@@ -6,6 +6,8 @@ import { AuthService } from '../../services/auth.service';
 import { RegisterRequest } from '../../interfaces/registerRequest.interface';
 import { AuthSuccess } from '../../interfaces/authSuccess.interface';
 import { User } from 'src/app/interfaces/user.interface';
+import { RegisterError } from '../../interfaces/registerError.interface';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +15,9 @@ import { User } from 'src/app/interfaces/user.interface';
   styleUrls: ['./register.component.scss'],
 })
 export class RegisterComponent {
+  public error: null | RegisterError = null;
   public onError = false;
+  public unknownError = 'An error occurred';
 
   public form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -32,17 +36,36 @@ export class RegisterComponent {
     const registerRequest = this.form.value as RegisterRequest;
     this.authService.register(registerRequest).subscribe({
       next: (response: AuthSuccess) => {
-        console.log('Registration successful :', response);
+        console.log('Registration successful:', response);
         localStorage.setItem('token', response.token);
         this.authService.me().subscribe((user: User) => {
           this.sessionService.logIn(user);
           this.router.navigate(['/rentals']);
         });
       },
-      error: (error) => {
-        console.error('Registration error:', error);
-        this.onError = true;
+      error: (error: HttpErrorResponse) => {
+        console.log('Registration error:', error);
+        this.error = error.error;
+        this.updateFormErrors();
       },
     });
+  }
+
+  updateFormErrors() {
+    if (typeof this.error === 'string') {
+      this.onError = true;
+    } else {
+      if (this.error?.email) {
+        this.form.get('email')?.setErrors({ backendError: this.error?.email });
+      }
+      if (this.error?.name) {
+        this.form.get('name')?.setErrors({ backendError: this.error?.name });
+      }
+      if (this.error?.password) {
+        this.form
+          .get('password')
+          ?.setErrors({ backendError: this.error?.password });
+      }
+    }
   }
 }
