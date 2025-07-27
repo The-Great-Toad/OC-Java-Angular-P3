@@ -1,0 +1,86 @@
+openapi: 3.0.2
+info:
+  title: Rental OC API
+  description: API to manage rental locations and user authentication
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: Operations related to user authentication and registration
+
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: New user registration
+      description: Create a new user account with name, email, and password.
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Validation errors
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: string
+                example:
+                  name: "Required field"
+                  email: "Required field / Invalid format / Email already used"
+                  password: "Required field"
+
+components:
+  schemas:
+
+    RegisterRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Doe"
+          description: "User's full name"
+        email:
+          type: string
+          format: email
+          example: "john.doe@example.com"
+          description: "User's unique email address"
+        password:
+          type: string
+          example: "Password123!"
+          description: "User's password"
+      required:
+        - name
+        - email
+        - password
+      example:
+        name: "John Doe"
+        email: "john.doe@example"
+        password: "Password123!"
+
+    AuthResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: "JWT token for authentication"
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+      example:
+        token: "jwt"
+

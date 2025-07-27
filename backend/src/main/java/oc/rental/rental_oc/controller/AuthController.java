@@ -1,7 +1,9 @@
 package oc.rental.rental_oc.controller;
 
-import oc.rental.rental_oc.model.RegisterRequest;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import jakarta.validation.Valid;
+import oc.rental.rental_oc.dto.auth.AuthResponse;
+import oc.rental.rental_oc.dto.auth.RegisterRequest;
+import oc.rental.rental_oc.service.AuthService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,12 +11,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth/")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
+    private final AuthService authService;
+
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
     @PostMapping("register")
-    public String register(@RequestBody RegisterRequest registerRequest) {
-        return "Registration successful; %nname: %s, %nemail:%s, %npassword: %s"
-                .formatted(registerRequest.name(), registerRequest.email(), registerRequest.password());
+    public AuthResponse register(@Valid @RequestBody RegisterRequest registerRequest) {
+        return authService.register(registerRequest);
     }
 }
