@@ -12,10 +12,9 @@ import { RentalsService } from '../../services/rentals.service';
 @Component({
   selector: 'app-detail',
   templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss']
+  styleUrls: ['./detail.component.scss'],
 })
 export class DetailComponent implements OnInit {
-
   public messageForm!: FormGroup;
   public rental: Rental | undefined;
 
@@ -25,16 +24,17 @@ export class DetailComponent implements OnInit {
     private messagesService: MessagesService,
     private rentalsService: RentalsService,
     private sessionService: SessionService,
-    private matSnackBar: MatSnackBar) {
+    private matSnackBar: MatSnackBar
+  ) {
     this.initMessageForm();
   }
 
   public ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get('id')!
+    const id = this.route.snapshot.paramMap.get('id')!;
 
     this.rentalsService
       .detail(id)
-      .subscribe((rental: Rental) => this.rental = rental);
+      .subscribe((rental: Rental) => (this.rental = rental));
   }
 
   public back() {
@@ -45,20 +45,22 @@ export class DetailComponent implements OnInit {
     const message = {
       rental_id: this.rental!.id,
       user_id: this.sessionService.user?.id,
-      message: this.messageForm.value.message
+      message: this.messageForm.value.message,
     } as MessageRequest;
 
-    this.messagesService.send(message).subscribe(
-      (messageResponse: MessageResponse) => {
+    this.messagesService
+      .send(message)
+      .subscribe((messageResponse: MessageResponse) => {
         this.initMessageForm();
-        this.matSnackBar.open(messageResponse.message, "Close", { duration: 3000 });
+        this.matSnackBar.open(messageResponse.message, 'Close', {
+          duration: 3000,
+        });
       });
   }
 
   private initMessageForm() {
     this.messageForm = this.fb.group({
-      message: ['', [Validators.required, Validators.min(10)]],
+      message: ['', [Validators.required, Validators.minLength(10)]],
     });
   }
-
 }
