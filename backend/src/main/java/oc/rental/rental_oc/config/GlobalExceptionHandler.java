@@ -34,12 +34,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException e) {
         LOGGER.error("{} - Bad Credentials : {}", LOGGER_PREFIX, e.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, INVALID_CREDENTIALS);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
         problemDetail.setTitle(INVALID_CREDENTIALS);
-        problemDetail.setProperty("error", INVALID_CREDENTIALS);
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
