@@ -6,6 +6,7 @@ import { SessionService } from 'src/app/services/session.service';
 import { AuthSuccess } from '../../interfaces/authSuccess.interface';
 import { LoginRequest } from '../../interfaces/loginRequest.interface';
 import { AuthService } from '../../services/auth.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   public hide = true;
   public onError = false;
+  public badCredentials = false;
 
   public form = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -29,6 +31,9 @@ export class LoginComponent {
   ) {}
 
   public submit(): void {
+    this.onError = false;
+    this.badCredentials = false;
+
     const loginRequest = this.form.value as LoginRequest;
     this.authService.login(loginRequest).subscribe({
       next: (response: AuthSuccess) => {
@@ -42,7 +47,16 @@ export class LoginComponent {
           error: () => (this.onError = true),
         });
       },
-      error: () => (this.onError = true),
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          this.badCredentials = true;
+          this.form.get('email')?.setErrors({ invalid: true });
+          this.form.get('password')?.setErrors({ invalid: true });
+        } else {
+          console.error('An error occurred:', error.message);
+          this.onError = true;
+        }
+      },
     });
   }
 }
