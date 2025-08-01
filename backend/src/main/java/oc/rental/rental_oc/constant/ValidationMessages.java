@@ -9,6 +9,9 @@ public final class ValidationMessages {
     // Specific messages
     public static final String EMAIL_ALREADY_USED = "{validation.email.already.used}";
 
+    // Authentication messages
+    public static final String INVALID_CREDENTIALS = "{validation.credentials.invalid}";
+
     private ValidationMessages() {
         /* Prevent implementation */
     }

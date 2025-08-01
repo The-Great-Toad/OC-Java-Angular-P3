@@ -1,8 +1,20 @@
 .login {
-    margin-top: 30px;
-    mat-card {
-        margin: 20px;
-        max-width: 600px;
-        width: 100%;
-    }
+  margin-top: 30px;
+  mat-card {
+    margin: 20px;
+    max-width: 600px;
+    width: 100%;
+  }
+}
+
+#bad-credentials {
+  text-align: center;
+  //   border: 1px solid #ed2525;
+  border: 1px solid #f44336;
+  border-radius: 5px;
+  background-color: #f44336;
+  color: white;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  margin-bottom: 1rem;
 }
