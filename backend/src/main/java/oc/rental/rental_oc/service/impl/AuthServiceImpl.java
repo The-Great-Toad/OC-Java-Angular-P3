@@ -8,6 +8,7 @@ import oc.rental.rental_oc.entity.User;
 import oc.rental.rental_oc.mapper.UserMapper;
 import oc.rental.rental_oc.repository.UserRepository;
 import oc.rental.rental_oc.service.AuthService;
+import oc.rental.rental_oc.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,11 +24,13 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -57,11 +60,11 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException(ValidationMessages.INVALID_CREDENTIALS);
         }
 
-        LOGGER.info("{} Successful login for email: {}", LOGGER_PREFIX, loginRequest.email());
         return generateToken(user);
     }
 
     private AuthResponse generateToken(User user) {
-        return new AuthResponse("jwt"); // TODO: implement JWT generation logic
+        LOGGER.debug("{} Generating JWT token for user: {}", LOGGER_PREFIX, user.getEmail());
+        return jwtService.generateToken(user.getEmail());
     }
 }
