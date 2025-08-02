@@ -1,5 +1,6 @@
 package oc.rental.rental_oc.config;
 
+import oc.rental.rental_oc.exception.TokenGenerationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -39,6 +40,16 @@ public class GlobalExceptionHandler {
         LOGGER.error("{} - Bad Credentials : {}", LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
         problemDetail.setTitle(INVALID_CREDENTIALS);
+        problemDetail.setProperty("timestamp", Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(TokenGenerationException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ProblemDetail handleTokenGenerationException(TokenGenerationException e) {
+        LOGGER.error("{} - Token Generation Error: {}", LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        problemDetail.setTitle("Token Generation Error");
         problemDetail.setProperty("timestamp", Instant.now());
         return problemDetail;
     }
