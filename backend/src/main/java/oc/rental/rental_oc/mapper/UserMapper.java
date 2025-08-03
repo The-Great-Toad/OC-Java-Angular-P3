@@ -1,5 +1,6 @@
 package oc.rental.rental_oc.mapper;
 
+import oc.rental.rental_oc.dto.UserDto;
 import oc.rental.rental_oc.dto.auth.RegisterRequest;
 import oc.rental.rental_oc.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,5 +28,20 @@ public class UserMapper {
                 .addPassword(passwordEncoder.encode(registerRequest.password()))
                 .addCreationDate()
                 .addUpdateDate();
+    }
+
+    /**
+     * Map User entity to UserDto.
+     *
+     * @param user the User entity to be mapped
+     * @return a UserDto containing the user's details
+     */
+    public UserDto mapToUserDto(User user) {
+        return  new UserDto()
+                .addId(user.getId())
+                .addName(user.getName())
+                .addEmail(user.getEmail())
+                .addCreatedAt(user.getCreatedAt().toLocalDate())
+                .addUpdatedAt(user.getUpdatedAt().toLocalDate());
     }
 }

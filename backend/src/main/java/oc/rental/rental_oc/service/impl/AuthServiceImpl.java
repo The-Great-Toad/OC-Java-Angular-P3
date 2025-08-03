@@ -1,6 +1,8 @@
 package oc.rental.rental_oc.service.impl;
 
+import oc.rental.rental_oc.constant.ErrorMessages;
 import oc.rental.rental_oc.constant.ValidationMessages;
+import oc.rental.rental_oc.dto.UserDto;
 import oc.rental.rental_oc.dto.auth.AuthResponse;
 import oc.rental.rental_oc.dto.auth.LoginRequest;
 import oc.rental.rental_oc.dto.auth.RegisterRequest;
@@ -12,8 +14,11 @@ import oc.rental.rental_oc.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.Principal;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -61,6 +66,18 @@ public class AuthServiceImpl implements AuthService {
         }
 
         return generateToken(user);
+    }
+
+    @Override
+    public UserDto getUserDetails(Principal principal) {
+        String email = principal.getName();
+        LOGGER.info("{} Retrieving user details for email: {}", LOGGER_PREFIX, email);
+
+        User user = userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND));
+
+        return userMapper.mapToUserDto(user);
     }
 
     private AuthResponse generateToken(User user) {

@@ -1,9 +1,12 @@
 package oc.rental.rental_oc.service;
 
 import jakarta.validation.Valid;
+import oc.rental.rental_oc.dto.UserDto;
 import oc.rental.rental_oc.dto.auth.AuthResponse;
 import oc.rental.rental_oc.dto.auth.LoginRequest;
 import oc.rental.rental_oc.dto.auth.RegisterRequest;
+
+import java.security.Principal;
 
 public interface AuthService {
 
@@ -22,4 +25,13 @@ public interface AuthService {
      * @return an AuthResponse containing the authentication token
      */
     AuthResponse login(@Valid LoginRequest loginRequest);
+
+
+    /**
+     * Retrieves the details of the currently authenticated user.
+     *
+     * @param principal the security principal representing the authenticated user
+     * @return a UserDto containing user details
+     */
+    UserDto getUserDetails(Principal principal);
 }
