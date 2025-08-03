@@ -1,6 +1,7 @@
 package oc.rental.rental_oc.config;
 
 import oc.rental.rental_oc.exception.TokenGenerationException;
+import oc.rental.rental_oc.exception.TokenValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final String LOGGER_PREFIX = "[GlobalExceptionHandler]";
     public static final String INVALID_CREDENTIALS = "Invalid Credentials";
+    public static final String TIMESTAMP = "timestamp";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -40,17 +42,18 @@ public class GlobalExceptionHandler {
         LOGGER.error("{} - Bad Credentials : {}", LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
         problemDetail.setTitle(INVALID_CREDENTIALS);
-        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
 
-    @ExceptionHandler(TokenGenerationException.class)
+    @ExceptionHandler({TokenGenerationException.class, TokenValidationException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ProblemDetail handleTokenGenerationException(TokenGenerationException e) {
-        LOGGER.error("{} - Token Generation Error: {}", LOGGER_PREFIX, e.getMessage());
+    public ProblemDetail handleTokenGenerationException(Exception e) {
+        String errorType = e instanceof TokenValidationException ? "Token Validation Error" : "Token Generation Error";
+        LOGGER.error("{} - {}: {}", LOGGER_PREFIX, errorType, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
-        problemDetail.setTitle("Token Generation Error");
-        problemDetail.setProperty("timestamp", Instant.now());
+        problemDetail.setTitle(errorType);
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
 }
