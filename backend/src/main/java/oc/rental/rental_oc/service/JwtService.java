@@ -116,7 +116,7 @@ public class JwtService {
             return signedJWT.getJWTClaimsSet().getSubject();
 
         } catch (ParseException ex) {
-            throw new TokenGenerationException("Failed to parse JWT token: " + ex.getMessage(), ex);
+            throw new TokenValidationException("Failed to parse JWT token: " + ex.getMessage(), ex);
         }
     }
 

@@ -76,8 +76,8 @@ paths:
                 example:
                   email: "Required field / Invalid format"
                   password: "Required field"
-        '500':
-          description: Internal server error
+        '401':
+          description: Unauthorized
           content:
             application/json:
               schema:
@@ -98,8 +98,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/UserDto'
-        '401':
-          description: Unauthorized
+        '500':
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -221,12 +221,12 @@ components:
           example: "example@email.com"
           description: "User's unique email address"
         createdAt:
-          type: object
+          type: string
           format: date
           example: "2023-10-01"
           description: "Timestamp when the user was created"
         updatedAt:
-          type: object
+          type: string
           format: date
           example: "2023-10-01"
           description: "Timestamp when the user was last updated"

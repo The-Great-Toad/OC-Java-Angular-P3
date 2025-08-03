@@ -1,5 +1,6 @@
 package oc.rental.rental_oc.config;
 
+import jakarta.annotation.PostConstruct;
 import oc.rental.rental_oc.constant.ErrorMessages;
 import oc.rental.rental_oc.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +32,13 @@ public class ApplicationConfig {
     @Value("${spring.security.user.roles}")
     private String roles;
 
+    private String encodedPassword;
+
+    @PostConstruct
+    public void init() {
+        encodedPassword = passwordEncoder().encode(password);
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -42,7 +50,7 @@ public class ApplicationConfig {
             if (name.equals(username)) {
                 return User
                         .withUsername(name)
-                        .password(passwordEncoder().encode(password))
+                        .password(encodedPassword)
                         .roles(roles.split(","))
                         .build();
             } else {
