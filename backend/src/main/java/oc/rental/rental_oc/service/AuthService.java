@@ -2,13 +2,14 @@ package oc.rental.rental_oc.service;
 
 import jakarta.validation.Valid;
 import oc.rental.rental_oc.dto.UserDto;
-import oc.rental.rental_oc.dto.auth.AuthResponse;
-import oc.rental.rental_oc.dto.auth.LoginRequest;
-import oc.rental.rental_oc.dto.auth.RegisterRequest;
+import oc.rental.rental_oc.dto.response.AuthResponse;
+import oc.rental.rental_oc.dto.request.LoginRequest;
+import oc.rental.rental_oc.dto.request.RegisterRequest;
+import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.security.Principal;
 
-public interface AuthService {
+public interface AuthService extends UserDetailsService {
 
     /**
      * Registers a new user with the provided registration details.

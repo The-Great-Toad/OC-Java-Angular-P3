@@ -4,6 +4,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import oc.rental.rental_oc.service.AuthService;
 import oc.rental.rental_oc.service.JwtService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -28,15 +28,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthenticationFilter.class);
     private static final String LOGGER_PREFIX = "[JwtAuthenticationFilter]";
     public static final String AUTHORIZATION = "Authorization";
-    public static final String BEARER_ = "Bearer ";
+    public static final String BEARER_SPACE = "Bearer ";
 
     private final JwtService jwtService;
-    private final UserDetailsService userDetailsService;
+    private final AuthService authService;
     private final HandlerExceptionResolver handlerExceptionResolver;
 
-    public JwtAuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService, HandlerExceptionResolver handlerExceptionResolver) {
+    public JwtAuthenticationFilter(JwtService jwtService, AuthService authService, HandlerExceptionResolver handlerExceptionResolver) {
         this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
+        this.authService = authService;
         this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader(AUTHORIZATION);
 
         /* Check Authorization header */
-        if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_)) {
+        if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_SPACE)) {
             LOGGER.warn("{} No valid Authorization header found", LOGGER_PREFIX);
             filterChain.doFilter(request, response);
             return;
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             LOGGER.info("{} Valid Authorization header found", LOGGER_PREFIX);
             /* Extract JWT from the Authorization header */
-            final String jwt = authHeader.substring(BEARER_.length()).trim();
+            final String jwt = authHeader.substring(BEARER_SPACE.length()).trim();
             final String userEmail = jwtService.extractUsername(jwt);
             LOGGER.info("{} Extracted user email: {}", LOGGER_PREFIX, userEmail);
 
@@ -66,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
             if (StringUtils.isNotBlank(userEmail) && Objects.isNull(authentication)) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+                UserDetails userDetails = this.authService.loadUserByUsername(userEmail);
 
                 /* Check if the JWT is valid */
                 if (jwtService.isTokenValid(jwt, userDetails)) {

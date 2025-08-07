@@ -10,7 +10,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.annotation.PostConstruct;
-import oc.rental.rental_oc.dto.auth.AuthResponse;
+import oc.rental.rental_oc.dto.response.AuthResponse;
 import oc.rental.rental_oc.exception.TokenGenerationException;
 import oc.rental.rental_oc.exception.TokenValidationException;
 import org.apache.commons.lang3.StringUtils;

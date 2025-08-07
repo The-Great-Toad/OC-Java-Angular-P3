@@ -1,7 +1,7 @@
 package oc.rental.rental_oc.mapper;
 
 import oc.rental.rental_oc.dto.UserDto;
-import oc.rental.rental_oc.dto.auth.RegisterRequest;
+import oc.rental.rental_oc.dto.request.RegisterRequest;
 import oc.rental.rental_oc.entity.User;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
