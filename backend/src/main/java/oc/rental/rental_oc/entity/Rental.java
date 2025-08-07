@@ -33,7 +33,7 @@ public class Rental {
     @Column
     private String picture;
 
-    @Column
+    @Column(length = 2000)
     private String description;
 
     @Column(name = "owner_id", nullable = false)

@@ -1,5 +1,6 @@
 package oc.rental.rental_oc.service;
 
+import oc.rental.rental_oc.dto.RentalDto;
 import oc.rental.rental_oc.dto.response.RentalsResponse;
 
 public interface RentalService {
@@ -9,4 +10,6 @@ public interface RentalService {
      * @return RentalsResponse containing a list of all rentals.
      */
     RentalsResponse findAll();
+
+    RentalDto getRental(Integer id);
 }

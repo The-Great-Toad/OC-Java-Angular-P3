@@ -1,7 +1,10 @@
 package oc.rental.rental_oc.service.impl;
 
+import oc.rental.rental_oc.constant.ErrorMessages;
+import oc.rental.rental_oc.dto.RentalDto;
 import oc.rental.rental_oc.dto.response.RentalsResponse;
 import oc.rental.rental_oc.entity.Rental;
+import oc.rental.rental_oc.exception.RentalNotFoundException;
 import oc.rental.rental_oc.mapper.RentalMapper;
 import oc.rental.rental_oc.repository.RentalRepository;
 import oc.rental.rental_oc.service.RentalService;
@@ -40,5 +43,15 @@ public class RentalServiceImpl implements RentalService {
                 .addRentals(rentals.stream()
                         .map(rentalMapper::mapToRentalDto)
                         .toList());
+    }
+
+    @Override
+    public RentalDto getRental(Integer id) {
+        LOGGER.debug("{} - Getting rental by id {}", LOG_PREFIX, id);
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND));
+
+        LOGGER.debug("{} - Found rental: {}", LOG_PREFIX, rental);
+        return rentalMapper.mapToRentalDto(rental);
     }
 }

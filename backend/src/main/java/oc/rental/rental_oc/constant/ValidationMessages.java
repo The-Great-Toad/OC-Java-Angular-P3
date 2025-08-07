@@ -12,6 +12,9 @@ public final class ValidationMessages {
     // Authentication messages
     public static final String INVALID_CREDENTIALS = "{validation.credentials.invalid}";
 
+    // Rental messages
+    public static final String POSITIVE_ID_REQUIRED = "{validation.id.positive.required}";
+
     private ValidationMessages() {
         /* Prevent implementation */
     }
