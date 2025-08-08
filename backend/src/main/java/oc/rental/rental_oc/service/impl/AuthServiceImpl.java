@@ -97,6 +97,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public Integer getUserIdByUsername(String username) {
+        return userRepository.findUserIdByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND));
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if (name.equals(username)) {
             return org.springframework.security.core.userdetails.User
