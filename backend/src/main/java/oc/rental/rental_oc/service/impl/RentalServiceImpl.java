@@ -1,6 +1,8 @@
 package oc.rental.rental_oc.service.impl;
 
+import jakarta.transaction.Transactional;
 import oc.rental.rental_oc.constant.ErrorMessages;
+import oc.rental.rental_oc.constant.SuccessMessages;
 import oc.rental.rental_oc.dto.RentalDto;
 import oc.rental.rental_oc.dto.request.RentalRequest;
 import oc.rental.rental_oc.dto.response.RentalResponse;
@@ -18,6 +20,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.List;
 
 @Service
@@ -25,6 +28,7 @@ public class RentalServiceImpl implements RentalService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RentalServiceImpl.class);
     private static final String LOG_PREFIX = "[RentalServiceImpl]";
+    private static final String LOG_MESSAGE_FORMAT = "{} - {}";
 
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
@@ -64,6 +68,7 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
+    @Transactional
     public RentalResponse createRental(RentalRequest rentalRequest, String ownerName) {
         LOGGER.debug("{} - Rental creation request received: {}", LOG_PREFIX, rentalRequest);
         try {
@@ -74,20 +79,47 @@ public class RentalServiceImpl implements RentalService {
             /* Saving mapped Rental entity */
             Rental rental = rentalMapper.mapToRental(rentalRequest)
                     .addOwnerId(ownerId);
-
             Rental savedRental = rentalRepository.save(rental);
             LOGGER.info("{} - Rental created successfully with ID: {}", LOG_PREFIX, savedRental.getId());
 
-            return new RentalResponse("Rental created successfully");
+            return new RentalResponse(SuccessMessages.RENTAL_CREATED);
 
         } catch (DataAccessException e) {
-            String errorMessage = "Database error while creating rental";
-            LOGGER.error("{} - {}: {}", LOG_PREFIX, errorMessage, e.getMessage());
+            String errorMessage = "Database error while creating rental: " + e.getMessage();
+            LOGGER.error(LOG_MESSAGE_FORMAT, LOG_PREFIX, errorMessage);
             throw new RentalException(errorMessage, e);
 
         } catch (UsernameNotFoundException e) {
             String errorMessage = "Invalid username: " + ownerName;
-            LOGGER.error("{} - {}", LOG_PREFIX, errorMessage);
+            LOGGER.error(LOG_MESSAGE_FORMAT, LOG_PREFIX, errorMessage);
+            throw new RentalException(errorMessage, e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public RentalResponse updateRental(Integer id, RentalRequest rentalRequest, Principal principal) {
+        LOGGER.debug("{} - Updating rental by id {} - Requested update: {}", LOG_PREFIX, id, rentalRequest);
+
+        try {
+            /* Retrieve rental and validate ownership */
+            Rental rental = rentalRepository.findByIdAndOwnerUsername(id, principal.getName())
+                    .orElseThrow(() -> {
+                        if (!rentalRepository.existsById(id)) {
+                            return new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND);
+                        }
+                        return new RentalException(ErrorMessages.RENTAL_UPDATE_UNAUTHORIZED);
+                    });
+
+            rentalMapper.updateRentalFromRequest(rental, rentalRequest);
+            Rental updatedRental = rentalRepository.save(rental);
+
+            LOGGER.info("{} - Rental updated successfully with ID: {}", LOG_PREFIX, updatedRental.getId());
+            return new RentalResponse(SuccessMessages.RENTAL_UPDATED);
+
+        } catch (DataAccessException e) {
+            String errorMessage = "Database error while updating rental: " + e.getMessage();
+            LOGGER.error(LOG_MESSAGE_FORMAT, LOG_PREFIX, errorMessage);
             throw new RentalException(errorMessage, e);
         }
     }

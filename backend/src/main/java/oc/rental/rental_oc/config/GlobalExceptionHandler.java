@@ -1,6 +1,7 @@
 package oc.rental.rental_oc.config;
 
 import jakarta.validation.ConstraintViolationException;
+import oc.rental.rental_oc.exception.RentalException;
 import oc.rental.rental_oc.exception.RentalNotFoundException;
 import oc.rental.rental_oc.exception.TokenGenerationException;
 import oc.rental.rental_oc.exception.TokenValidationException;
@@ -24,7 +25,6 @@ public class GlobalExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final String LOGGER_PREFIX = "[GlobalExceptionHandler]";
-    public static final String INVALID_CREDENTIALS = "Invalid Credentials";
     public static final String TIMESTAMP = "timestamp";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -53,8 +53,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException e) {
         LOGGER.error("{} - Bad Credentials : {}", LOGGER_PREFIX, e.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
-        problemDetail.setTitle(INVALID_CREDENTIALS);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+        problemDetail.setTitle("Invalid Credentials");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
@@ -71,11 +71,21 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RentalNotFoundException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail handleRentalNotFoundException(RentalNotFoundException e) {
         LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
         problemDetail.setTitle("Rental Not Found");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RentalException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ProblemDetail handleRentalException(RentalException e) {
+        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+        problemDetail.setTitle("Rental Exception");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }

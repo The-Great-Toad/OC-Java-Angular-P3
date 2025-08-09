@@ -2,6 +2,7 @@ package oc.rental.rental_oc.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.math.BigDecimal;
 import java.util.StringJoiner;
 
 public class RentalDto {
@@ -12,7 +13,7 @@ public class RentalDto {
 
     private Double surface;
 
-    private Double price;
+    private BigDecimal price;
 
     private String picture;
 
@@ -52,11 +53,11 @@ public class RentalDto {
         this.surface = surface;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -130,7 +131,7 @@ public class RentalDto {
         return this;
     }
 
-    public RentalDto addPrice(Double price) {
+    public RentalDto addPrice(BigDecimal price) {
         this.price = price;
         return this;
     }

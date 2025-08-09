@@ -7,11 +7,14 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import oc.rental.rental_oc.constant.ValidationMessages;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -24,14 +27,16 @@ public class Rental {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
+    @Column(nullable = false)
     private String name;
 
-    @Column
+    @Column(nullable = false, precision = 10, scale = 2)
+    @Min(value = 0, message = ValidationMessages.POSITIVE_NUMBER_REQUIRED)
     private Double surface;
 
-    @Column
-    private Double price;
+    @Column(nullable = false, precision = 10, scale = 2)
+    @Min(value = 0, message = ValidationMessages.POSITIVE_NUMBER_REQUIRED)
+    private BigDecimal price;
 
     @Column
     private String picture;
@@ -44,11 +49,11 @@ public class Rental {
 
     @CreatedDate
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private LocalDateTime updatedAt;
 
 
     public Integer getId() {
@@ -71,11 +76,11 @@ public class Rental {
         this.surface = surface;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -103,19 +108,19 @@ public class Rental {
         this.ownerId = ownerId;
     }
 
-    public LocalDate getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDate createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public LocalDate getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(LocalDate updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -160,7 +165,7 @@ public class Rental {
         return this;
     }
 
-    public Rental addPrice(Double price) {
+    public Rental addPrice(BigDecimal price) {
         this.price = price;
         return this;
     }
@@ -180,12 +185,12 @@ public class Rental {
         return this;
     }
 
-    public Rental addCreatedAt(LocalDate createdAt) {
+    public Rental addCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
         return this;
     }
 
-    public Rental addUpdatedAt(LocalDate updatedAt) {
+    public Rental addUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
         return this;
     }

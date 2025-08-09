@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,5 +43,11 @@ public class RentalController {
     @PostMapping
     public RentalResponse createRental(@Valid @RequestBody RentalRequest rentalRequest, Principal principal) {
         return rentalService.createRental(rentalRequest, principal.getName());
+    }
+
+    @PutMapping("{id}")
+    public RentalResponse updateRental(@PathVariable("id") @Positive(message = ValidationMessages.POSITIVE_NUMBER_REQUIRED) Integer id,
+                                       @Valid @RequestBody RentalRequest rentalRequest, Principal principal) {
+        return rentalService.updateRental(id, rentalRequest, principal);
     }
 }

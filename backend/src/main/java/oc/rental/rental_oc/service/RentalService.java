@@ -5,6 +5,8 @@ import oc.rental.rental_oc.dto.request.RentalRequest;
 import oc.rental.rental_oc.dto.response.RentalResponse;
 import oc.rental.rental_oc.dto.response.RentalsResponse;
 
+import java.security.Principal;
+
 public interface RentalService {
 
     /**
@@ -28,4 +30,14 @@ public interface RentalService {
      * @return RentalResponse containing the creation confirmation message
      */
     RentalResponse createRental(RentalRequest rentalRequest, String ownerName);
+
+    /**
+     * Updates an existing rental.
+     *
+     * @param id the ID of the rental to update
+     * @param rentalRequest the request containing updated rental details
+     * @param principal the rental owner
+     * @return RentalResponse containing the update confirmation message
+     */
+    RentalResponse updateRental(Integer id, RentalRequest rentalRequest, Principal principal);
 }

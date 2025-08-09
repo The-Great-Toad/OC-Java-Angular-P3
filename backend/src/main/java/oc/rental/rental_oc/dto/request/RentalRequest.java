@@ -1,10 +1,14 @@
 package oc.rental.rental_oc.dto.request;
 
+import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import oc.rental.rental_oc.constant.ValidationMessages;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.URL;
+
+import java.math.BigDecimal;
 
 public record RentalRequest(
         @NotBlank(message = ValidationMessages.REQUIRED_FIELD)
@@ -17,9 +21,11 @@ public record RentalRequest(
 
         @NotNull(message = ValidationMessages.REQUIRED_FIELD)
         @Positive(message = ValidationMessages.POSITIVE_NUMBER_REQUIRED)
-        Double price,
+        @DecimalMax(value = "999999.99", message = ValidationMessages.DECIMAL_MAX_VALUE)
+        BigDecimal price,
 
-        @Length(min = 1, max = 255, message = ValidationMessages.RENTAL_PICTURE_LENGTH)
+        @URL(message = ValidationMessages.INVALID_URL_FORMAT)
+        @Length(max = 255, message = ValidationMessages.RENTAL_PICTURE_LENGTH)
         String picture,
 
         @Length(max = 2000, message = ValidationMessages.RENTAL_DESCRIPTION_LENGTH)
