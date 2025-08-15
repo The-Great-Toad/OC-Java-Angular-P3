@@ -30,7 +30,7 @@ public class Rental {
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false)
     @Min(value = 0, message = ValidationMessages.POSITIVE_NUMBER_REQUIRED)
     private Double surface;
 
