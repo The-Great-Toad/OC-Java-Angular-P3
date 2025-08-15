@@ -1,0 +1,143 @@
+collection:
+  get:
+    tags:
+      - Rentals
+    summary: Get all rentals
+    description: Retrieve a list of all available rentals.
+    operationId: getAllRentals
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: Rentals retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/responses/RentalsResponse.yaml'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+
+  post:
+    tags:
+      - Rentals
+    summary: Create a new rental
+    description: Create a new rental with the provided information.
+    operationId: createRental
+    security:
+      - bearerAuth: []
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/requests/RentalRequest.yaml'
+    responses:
+      '200':
+        description: Rental created successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/responses/RentalResponse.yaml'
+      '400':
+        description: Validation errors
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ValidationErrorResponse.yaml'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+
+item:
+  get:
+    tags:
+      - Rentals
+    summary: Get rental by ID
+    description: Retrieve a specific rental by its ID.
+    operationId: getRentalById
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Rental ID
+        example: 1
+    responses:
+      '200':
+        description: Rental retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/dto/RentalDto.yaml'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+      '404':
+        description: Rental not found
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+
+  put:
+    tags:
+      - Rentals
+    summary: Update rental
+    description: Update an existing rental with the provided information.
+    operationId: updateRental
+    security:
+      - bearerAuth: []
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: Rental ID
+        example: 1
+    requestBody:
+      required: true
+      content:
+        multipart/form-data:
+          schema:
+            $ref: '../schemas/requests/RentalRequest.yaml'
+    responses:
+      '200':
+        description: Rental updated successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/responses/RentalResponse.yaml'
+      '400':
+        description: Validation errors
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ValidationErrorResponse.yaml'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+      '404':
+        description: Rental not found
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'

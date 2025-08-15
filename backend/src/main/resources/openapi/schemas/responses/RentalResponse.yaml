@@ -1,0 +1,12 @@
+type: object
+title: RentalResponse
+description: "Response containing the rental creation or update message"
+example:
+  message: "Rental successfully updated"
+properties:
+  message:
+    type: string
+    description: "Success message"
+    example: "Rental successfully created"
+required:
+  - message

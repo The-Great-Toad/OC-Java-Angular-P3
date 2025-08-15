@@ -15,238 +15,19 @@ tags:
     description: Operations related to rental management
 
 paths:
+  # Authentication endpoints
   /auth/register:
-    post:
-      tags:
-        - Authentication
-      summary: New user registration
-      description: Create a new user account with name, email, and password.
-      operationId: register
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '200':
-          description: User registered successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-
+    $ref: './openapi/paths/auth.yaml#/register'
   /auth/login:
-    post:
-      tags:
-        - Authentication
-      summary: User login
-      description: Authenticate a user with email and password.
-      operationId: login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '200':
-          description: User logged in successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-
+    $ref: './openapi/paths/auth.yaml#/login'
   /auth/me:
-    get:
-      tags:
-        - Authentication
-      summary: Get current user information
-      description: Retrieve the authenticated user's information.
-      operationId: getUserDetails
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User information retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserDto'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
+    $ref: './openapi/paths/auth.yaml#/me'
 
+  # Rental endpoints
   /rentals:
-    get:
-      tags:
-        - Rentals
-      summary: Get all rentals
-      description: Retrieve a list of all available rentals.
-      operationId: getAllRentals
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: Rentals retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RentalsResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-
-    post:
-      tags:
-        - Rentals
-      summary: Create a new rental
-      description: Create a new rental with the provided information.
-      operationId: createRental
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RentalRequest'
-      responses:
-        '200':
-          description: Rental created successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RentalResponse'
-        '400':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-
+    $ref: './openapi/paths/rentals.yaml#/collection'
   /rentals/{id}:
-    get:
-      tags:
-        - Rentals
-      summary: Get rental by ID
-      description: Retrieve a specific rental by its ID.
-      operationId: getRentalById
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-          description: Rental ID
-          example: 1
-      responses:
-        '200':
-          description: Rental retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RentalDto'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        '404':
-          description: Rental not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-
-    put:
-      tags:
-        - Rentals
-      summary: Update rental
-      description: Update an existing rental with the provided information.
-      operationId: updateRental
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-          description: Rental ID
-          example: 1
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RentalRequest'
-      responses:
-        '200':
-          description: Rental updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/RentalResponse'
-        '400':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ValidationErrorResponse'
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
-        '404':
-          description: Rental not found
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
+    $ref: './openapi/paths/rentals.yaml#/item'
 
 components:
   securitySchemes:
@@ -257,244 +38,30 @@ components:
       description: "Use the JWT token obtained from login or registration."
 
   schemas:
+    # Request schemas
     RegisterRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          example: "John Doe"
-          description: "User's full name"
-        email:
-          type: string
-          format: email
-          example: "john.doe@example.com"
-          description: "User's unique email address"
-        password:
-          type: string
-          example: "Password123!"
-          description: "User's password"
-      required:
-        - name
-        - email
-        - password
-
+      $ref: './openapi/schemas/requests/RegisterRequest.yaml'
     LoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          example: "example@email.com"
-        password:
-          type: string
-          example: "Password123!"
-      required:
-        - email
-        - password
-
+      $ref: './openapi/schemas/requests/LoginRequest.yaml'
     RentalRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 255
-          example: "Beautiful apartment in Paris"
-          description: "Rental property name"
-        surface:
-          type: number
-          format: decimal
-          minimum: 0
-          maximum: 999999.99
-          example: 85.5
-          description: "Surface area in square meters"
-        price:
-          type: number
-          format: decimal
-          minimum: 0
-          maximum: 9999999.99
-          example: 1200.00
-          description: "Monthly rental price in euros"
-        picture:
-          type: string
-          format: binary
-          example: "http://localhost:8080/uploads/apartment.jpg"
-          description: "Property picture file"
-        description:
-          type: string
-          maxLength: 2000
-          example: "Charming 2-bedroom apartment with balcony"
-          description: "Detailed description of the rental property"
-      required:
-        - name
-        - surface
-        - price
-        - picture
+      $ref: './openapi/schemas/requests/RentalRequest.yaml'
 
+    # Response schemas
     AuthResponse:
-      type: object
-      properties:
-        token:
-          type: string
-          description: "JWT token for authentication"
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-      required:
-        - token
-
+      $ref: './openapi/schemas/responses/AuthResponse.yaml'
     RentalResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: "Rental successfully created/updated"
-          description: "Success message"
-      required:
-        - message
-
+      $ref: './openapi/schemas/responses/RentalResponse.yaml'
     RentalsResponse:
-      type: object
-      properties:
-        rentals:
-          type: array
-          items:
-            $ref: '#/components/schemas/RentalDto'
-          description: "List of all rentals"
-      required:
-        - rentals
+      $ref: './openapi/schemas/responses/RentalsResponse.yaml'
 
+    # DTO schemas
     RentalDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-          description: "Unique identifier for the rental"
-        name:
-          type: string
-          example: "Beautiful apartment in Paris"
-          description: "Rental property name"
-        surface:
-          type: number
-          format: decimal
-          example: 85.5
-          description: "Surface area in square meters"
-        price:
-          type: number
-          format: decimal
-          example: 1200.00
-          description: "Monthly rental price in euros"
-        picture:
-          type: string
-          format: uri
-          example: "http://localhost:8080/uploads/apartment.jpg"
-          description: "URL to the property picture"
-        description:
-          type: string
-          example: "Charming 2-bedroom apartment with balcony"
-          description: "Detailed description of the rental property"
-        owner_id:
-          type: integer
-          format: int64
-          example: 1
-          description: "ID of the rental owner"
-        created_at:
-          type: string
-          format: date-time
-          example: "2023-10-01T12:00:00Z"
-          description: "Timestamp when the rental was created"
-        updated_at:
-          type: string
-          format: date-time
-          example: "2023-10-01T12:00:00Z"
-          description: "Timestamp when the rental was last updated"
-      required:
-        - id
-        - name
-        - surface
-        - price
-        - owner_id
-        - created_at
-        - updated_at
-
+      $ref: './openapi/schemas/dto/RentalDto.yaml'
     UserDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-          description: "Unique identifier for the user"
-        name:
-          type: string
-          example: "John Doe"
-          description: "User's full name"
-        email:
-          type: string
-          format: email
-          example: "example@email.com"
-          description: "User's unique email address"
-        created_at:
-          type: string
-          format: date-time
-          example: "2023-10-01T12:00:00Z"
-          description: "Timestamp when the user was created"
-        updated_at:
-          type: string
-          format: date-time
-          example: "2023-10-01T12:00:00Z"
-          description: "Timestamp when the user was last updated"
-      required:
-        - id
-        - name
-        - email
-        - created_at
-        - updated_at
+      $ref: './openapi/schemas/dto/UserDto.yaml'
 
+    # Common schemas
     ValidationErrorResponse:
-      type: object
-      additionalProperties:
-        type: string
-      example:
-        name: "Required field"
-        email: "Invalid format"
-        price: "Must be positive"
-      description: "Map of field names to validation error messages"
-
+      $ref: './openapi/schemas/common/ValidationErrorResponse.yaml'
     ProblemDetail:
-      type: object
-      properties:
-        type:
-          type: string
-          format: uri
-          example: "https://example.com/probs/invalid-credentials"
-          description: "A URI reference of the problem type"
-        title:
-          type: string
-          example: "Invalid Credentials"
-          description: "The problem title"
-        status:
-          type: integer
-          example: 401
-          description: "HTTP status code for the problem"
-        detail:
-          type: string
-          example: "Invalid Credentials"
-          description: "The problem detail"
-        instance:
-          type: string
-          format: uri
-          example: "/api/auth/login"
-          description: "The problem instance request path"
-        timestamp:
-          type: string
-          format: date-time
-          example: "2023-10-01T12:00:00Z"
-          description: "The time at which the problem occurred"
-      required:
-        - type
-        - title
-        - status
-        - detail
-        - instance
-        - timestamp
+      $ref: './openapi/schemas/common/ProblemDetail.yaml'
