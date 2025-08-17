@@ -3,6 +3,7 @@ package oc.rental.rental_oc.config;
 import jakarta.validation.ConstraintViolationException;
 import oc.rental.rental_oc.exception.RentalException;
 import oc.rental.rental_oc.exception.RentalNotFoundException;
+import oc.rental.rental_oc.exception.StorageException;
 import oc.rental.rental_oc.exception.TokenGenerationException;
 import oc.rental.rental_oc.exception.TokenValidationException;
 import org.slf4j.Logger;
@@ -86,6 +87,16 @@ public class GlobalExceptionHandler {
         LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
         problemDetail.setTitle("Rental Exception");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(StorageException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ProblemDetail handleStorageException(StorageException e) {
+        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        problemDetail.setTitle("Storage Exception");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }

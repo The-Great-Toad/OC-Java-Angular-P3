@@ -48,12 +48,10 @@ export class LoginComponent {
         });
       },
       error: (error: HttpErrorResponse) => {
+        console.error('An error occurred:', error);
         if (error.status === 401) {
           this.badCredentials = true;
-          this.form.get('email')?.setErrors({ invalid: true });
-          this.form.get('password')?.setErrors({ invalid: true });
         } else {
-          console.error('An error occurred:', error.message);
           this.onError = true;
         }
       },

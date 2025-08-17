@@ -13,11 +13,9 @@ import jakarta.annotation.PostConstruct;
 import oc.rental.rental_oc.dto.response.AuthResponse;
 import oc.rental.rental_oc.exception.TokenGenerationException;
 import oc.rental.rental_oc.exception.TokenValidationException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -83,20 +81,16 @@ public class JwtService {
     }
 
     /**
-     * Validates the JWT token against the provided user details.
-     * It checks if the token is signed correctly, if the username matches, and if the token is not expired.
+     * Validates the JWT token.
+     * It checks if the token is signed correctly and if the token is not expired.
      *
      * @param token the JWT token to validate
-     * @param user the user details to match against the token
      * @return true if the token is valid, false otherwise
      */
-    public boolean isTokenValid(String token, UserDetails user) {
+    public boolean isTokenValid(String token) {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-
-            return signedJWT.verify(verifier) &&
-                    StringUtils.equals(extractUsername(token), user.getUsername()) &&
-                    !isTokenExpired(token);
+            return signedJWT.verify(verifier) && !isTokenExpired(token);
 
         } catch (Exception e) {
             LOGGER.error("{} Token validation failed: {}", LOGGER_PREFIX, e.getMessage());

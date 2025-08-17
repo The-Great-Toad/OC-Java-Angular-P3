@@ -33,11 +33,13 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final AuthService authService;
+    private final FileSystemStorageService fileSystemStorageService;
 
-    public RentalServiceImpl(RentalRepository rentalRepository, RentalMapper rentalMapper, AuthService authService) {
+    public RentalServiceImpl(RentalRepository rentalRepository, RentalMapper rentalMapper, AuthService authService, FileSystemStorageService fileSystemStorageService) {
         this.rentalRepository = rentalRepository;
         this.rentalMapper = rentalMapper;
         this.authService = authService;
+        this.fileSystemStorageService = fileSystemStorageService;
     }
 
     @Override
@@ -72,12 +74,17 @@ public class RentalServiceImpl implements RentalService {
     public RentalResponse createRental(RentalRequest rentalRequest, String ownerName) {
         LOGGER.debug("{} - Rental creation request received: {}", LOG_PREFIX, rentalRequest);
         try {
+            String picturePath = null;
+            if (rentalRequest.picture() != null && !rentalRequest.picture().isEmpty()) {
+                picturePath = fileSystemStorageService.store(rentalRequest.picture());
+            }
+
             /* Retrieving owner id */
             Integer ownerId = authService.getUserIdByUsername(ownerName);
             LOGGER.debug("{} - Owner ID for username {}: {}", LOG_PREFIX, ownerName, ownerId);
 
             /* Saving mapped Rental entity */
-            Rental rental = rentalMapper.mapToRental(rentalRequest)
+            Rental rental = rentalMapper.mapToRental(rentalRequest, picturePath)
                     .addOwnerId(ownerId);
             Rental savedRental = rentalRepository.save(rental);
             LOGGER.info("{} - Rental created successfully with ID: {}", LOG_PREFIX, savedRental.getId());
@@ -102,8 +109,13 @@ public class RentalServiceImpl implements RentalService {
         LOGGER.debug("{} - Updating rental by id {} - Requested update: {}", LOG_PREFIX, id, rentalRequest);
 
         try {
+            String picturePath = null;
+            if (rentalRequest.picture() != null && !rentalRequest.picture().isEmpty()) {
+                picturePath = fileSystemStorageService.store(rentalRequest.picture());
+            }
+
             /* Retrieve rental and validate ownership */
-            Rental rental = rentalRepository.findByIdAndOwnerUsername(id, principal.getName())
+            Rental rentalToUpdate = rentalRepository.findByIdAndOwnerUsername(id, principal.getName())
                     .orElseThrow(() -> {
                         if (!rentalRepository.existsById(id)) {
                             return new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND);
@@ -111,8 +123,8 @@ public class RentalServiceImpl implements RentalService {
                         return new RentalException(ErrorMessages.RENTAL_UPDATE_UNAUTHORIZED);
                     });
 
-            rentalMapper.updateRentalFromRequest(rental, rentalRequest);
-            Rental updatedRental = rentalRepository.save(rental);
+            rentalMapper.updateRentalFromRequest(rentalToUpdate, rentalRequest, picturePath);
+            Rental updatedRental = rentalRepository.save(rentalToUpdate);
 
             LOGGER.info("{} - Rental updated successfully with ID: {}", LOG_PREFIX, updatedRental.getId());
             return new RentalResponse(SuccessMessages.RENTAL_UPDATED);

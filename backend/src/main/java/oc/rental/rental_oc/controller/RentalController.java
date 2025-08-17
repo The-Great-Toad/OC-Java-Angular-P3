@@ -8,12 +8,13 @@ import oc.rental.rental_oc.dto.request.RentalRequest;
 import oc.rental.rental_oc.dto.response.RentalResponse;
 import oc.rental.rental_oc.dto.response.RentalsResponse;
 import oc.rental.rental_oc.service.RentalService;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,14 +41,14 @@ public class RentalController {
         return rentalService.getRental(id);
     }
 
-    @PostMapping
-    public RentalResponse createRental(@Valid @RequestBody RentalRequest rentalRequest, Principal principal) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public RentalResponse createRental(@Valid @ModelAttribute RentalRequest rentalRequest, Principal principal) {
         return rentalService.createRental(rentalRequest, principal.getName());
     }
 
-    @PutMapping("{id}")
+    @PutMapping(value = "{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public RentalResponse updateRental(@PathVariable("id") @Positive(message = ValidationMessages.POSITIVE_NUMBER_REQUIRED) Integer id,
-                                       @Valid @RequestBody RentalRequest rentalRequest, Principal principal) {
+                                       @Valid @ModelAttribute RentalRequest rentalRequest, Principal principal) {
         return rentalService.updateRental(id, rentalRequest, principal);
     }
 }

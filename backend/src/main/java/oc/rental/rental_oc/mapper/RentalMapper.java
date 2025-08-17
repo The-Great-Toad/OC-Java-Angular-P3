@@ -10,12 +10,6 @@ import java.util.Objects;
 @Component
 public class RentalMapper {
 
-    /**
-     * Maps a Rental entity to a RentalDto.
-     *
-     * @param rental the Rental entity to map
-     * @return a RentalDto containing the mapped data
-     */
     public RentalDto mapToRentalDto(Rental rental) {
         RentalDto rentalDto = new RentalDto()
                 .addId(rental.getId())
@@ -37,33 +31,25 @@ public class RentalMapper {
         return rentalDto;
     }
 
-    /**
-     * Maps a RentalRequest to a Rental entity.
-     *
-     * @param rentalRequest the RentalRequest containing rental details
-     * @return a Rental entity populated with the details from the request
-     */
-    public Rental mapToRental(RentalRequest rentalRequest) {
+    public Rental mapToRental(RentalRequest rentalRequest, String picturePath) {
         return new Rental()
                 .addName(rentalRequest.name())
                 .addSurface(rentalRequest.surface())
                 .addPrice(rentalRequest.price())
-                .addPicture(rentalRequest.picture())
+                .addPicture(picturePath)
                 .addDescription(rentalRequest.description());
     }
 
-    /**
-     * Updates an existing Rental entity with details from a RentalRequest.
-     *
-     * @param rental the Rental entity to update
-     * @param rentalRequest the RentalRequest containing updated rental details
-     */
-    public void updateRentalFromRequest(Rental rental, RentalRequest rentalRequest) {
+    public void updateRentalFromRequest(Rental rental, RentalRequest rentalRequest, String picturePath) {
         rental
                 .addName(rentalRequest.name())
                 .addSurface(rentalRequest.surface())
                 .addPrice(rentalRequest.price())
-                .addPicture(rentalRequest.picture())
                 .addDescription(rentalRequest.description());
+
+        // Ne met à jour la picture que si un nouveau fichier est fourni
+        if (picturePath != null) {
+            rental.addPicture(picturePath);
+        }
     }
 }

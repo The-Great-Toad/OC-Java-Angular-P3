@@ -46,9 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
         LOGGER.info("{} Processing request: {} {}", LOGGER_PREFIX, request.getMethod(), request.getRequestURI());
-        final String authHeader = request.getHeader(AUTHORIZATION);
 
         /* Check Authorization header */
+        final String authHeader = request.getHeader(AUTHORIZATION);
         if (Objects.isNull(authHeader) || !authHeader.startsWith(BEARER_SPACE)) {
             LOGGER.warn("{} No valid Authorization header found", LOGGER_PREFIX);
             filterChain.doFilter(request, response);
@@ -64,22 +64,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             /* If userEmail is not null and no authentication is present, validate the JWT */
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
             if (StringUtils.isNotBlank(userEmail) && Objects.isNull(authentication)) {
-                UserDetails userDetails = this.authService.loadUserByUsername(userEmail);
-
                 /* Check if the JWT is valid */
-                if (jwtService.isTokenValid(jwt, userDetails)) {
-                    /* Create an authentication token and set it in the SecurityContext */
-                    LOGGER.info("{} - Valid JWT - Setting authentication for user: {}", LOGGER_PREFIX, userEmail);
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-
+                if (jwtService.isTokenValid(jwt)) {
+                    setSecurityContextAuthentication(request, userEmail);
                 } else {
                     LOGGER.warn("{} Invalid JWT for user: {} - Token expired: {}", LOGGER_PREFIX, userEmail, jwtService.isTokenExpired(jwt));
                 }
@@ -91,5 +79,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             LOGGER.error("{} Exception occurred while processing JWT: {}", LOGGER_PREFIX, exception.getMessage(), exception);
             handlerExceptionResolver.resolveException(request, response, null, exception);
         }
+    }
+
+    /**
+     * Sets the authentication in the SecurityContext based on the provided user email.
+     *
+     * @param request the HttpServletRequest to extract details from
+     * @param userEmail the email of the user to authenticate
+     */
+    private void setSecurityContextAuthentication(HttpServletRequest request, String userEmail) {
+        /* Create an authentication token and set it in the SecurityContext */
+        UserDetails userDetails = this.authService.loadUserByUsername(userEmail);
+        LOGGER.info("{} - Valid JWT - Setting authentication for user: {}", LOGGER_PREFIX, userEmail);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                userDetails.getAuthorities()
+        );
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 }

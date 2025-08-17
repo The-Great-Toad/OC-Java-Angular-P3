@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import oc.rental.rental_oc.constant.ValidationMessages;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.URL;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 
@@ -24,9 +24,7 @@ public record RentalRequest(
         @DecimalMax(value = "999999.99", message = ValidationMessages.DECIMAL_MAX_VALUE)
         BigDecimal price,
 
-        @URL(message = ValidationMessages.INVALID_URL_FORMAT)
-        @Length(max = 255, message = ValidationMessages.RENTAL_PICTURE_LENGTH)
-        String picture,
+        MultipartFile picture, // null pour les updates
 
         @Length(max = 2000, message = ValidationMessages.RENTAL_DESCRIPTION_LENGTH)
         String description
