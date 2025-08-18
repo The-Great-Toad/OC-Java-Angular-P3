@@ -1,0 +1,17 @@
+type: object
+title: LoginRequest
+description: "Request schema for user login"
+example:
+  email: "example@email.com"
+  password: "Password123!"
+properties:
+  email:
+    type: string
+    format: email
+    example: "example@email.com"
+  password:
+    type: string
+    example: "Password123!"
+required:
+  - email
+  - password

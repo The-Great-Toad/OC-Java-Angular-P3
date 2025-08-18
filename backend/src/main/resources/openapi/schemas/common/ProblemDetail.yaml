@@ -1,0 +1,45 @@
+type: object
+title: ProblemDetail
+description: "Problem Details as defined in RFC 7807, used to convey error information in a standardized format."
+example:
+  type: "https://example.com/probs/invalid-credentials"
+  title: "Invalid Credentials"
+  status: 401
+  detail: "Invalid Credentials"
+  instance: "/api/auth/login"
+  timestamp: "2023-10-01T12:00:00Z"
+properties:
+  type:
+    type: string
+    format: uri
+    example: "https://example.com/probs/invalid-credentials"
+    description: "A URI reference of the problem type"
+  title:
+    type: string
+    example: "Invalid Credentials"
+    description: "The problem title"
+  status:
+    type: integer
+    example: 401
+    description: "HTTP status code for the problem"
+  detail:
+    type: string
+    example: "Invalid Credentials"
+    description: "The problem detail"
+  instance:
+    type: string
+    format: uri
+    example: "/api/auth/login"
+    description: "The problem instance request path"
+  timestamp:
+    type: string
+    format: date-time
+    example: "2023-10-01T12:00:00Z"
+    description: "The time at which the problem occurred"
+required:
+  - type
+  - title
+  - status
+  - detail
+  - instance
+  - timestamp

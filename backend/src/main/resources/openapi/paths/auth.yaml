@@ -1,0 +1,88 @@
+register:
+  post:
+    tags:
+      - Authentication
+    summary: New user registration
+    description: Create a new user account with name, email, and password.
+    operationId: register
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/requests/RegisterRequest.yaml'
+    responses:
+      '200':
+        description: User registered successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/responses/AuthResponse.yaml'
+      '400':
+        description: Validation errors
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ValidationErrorResponse.yaml'
+
+login:
+  post:
+    tags:
+      - Authentication
+    summary: User login
+    description: Authenticate a user with email and password.
+    operationId: login
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/requests/LoginRequest.yaml'
+    responses:
+      '200':
+        description: User logged in successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/responses/AuthResponse.yaml'
+      '400':
+        description: Validation errors
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ValidationErrorResponse.yaml'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+
+me:
+  get:
+    tags:
+      - Authentication
+    summary: Get current user information
+    description: Retrieve the authenticated user's information.
+    operationId: getUserDetails
+    security:
+      - bearerAuth: []
+    responses:
+      '200':
+        description: User information retrieved successfully
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/dto/UserDto.yaml'
+      '401':
+        description: Unauthorized
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'
+      '500':
+        description: Internal server error
+        content:
+          application/json:
+            schema:
+              $ref: '../schemas/common/ProblemDetail.yaml'

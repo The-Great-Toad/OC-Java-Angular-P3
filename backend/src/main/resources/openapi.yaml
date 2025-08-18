@@ -11,99 +11,23 @@ servers:
 tags:
   - name: Authentication
     description: Operations related to user authentication and registration
+  - name: Rentals
+    description: Operations related to rental management
 
 paths:
+  # Authentication endpoints
   /auth/register:
-    post:
-      tags:
-        - Authentication
-      summary: New user registration
-      description: Create a new user account with name, email, and password.
-      operationId: register
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RegisterRequest'
-      responses:
-        '200':
-          description: User registered successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: string
-                example:
-                  name: "Required field"
-                  email: "Required field / Invalid format / Email already used"
-                  password: "Required field"
+    $ref: './openapi/paths/auth.yaml#/register'
   /auth/login:
-    post:
-      tags:
-        - Authentication
-      summary: User login
-      description: Authenticate a user with email and password.
-      operationId: login
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LoginRequest'
-      responses:
-        '200':
-          description: User logged in successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Validation errors
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties:
-                  type: string
-                example:
-                  email: "Required field / Invalid format"
-                  password: "Required field"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
+    $ref: './openapi/paths/auth.yaml#/login'
   /auth/me:
-    get:
-      tags:
-        - Authentication
-      summary: Get current user information
-      description: Retrieve the authenticated user's information.
-      operationId: getUserDetails
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: User information retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserDto'
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ProblemDetail'
+    $ref: './openapi/paths/auth.yaml#/me'
+
+  # Rental endpoints
+  /rentals:
+    $ref: './openapi/paths/rentals.yaml#/collection'
+  /rentals/{id}:
+    $ref: './openapi/paths/rentals.yaml#/item'
 
 components:
   securitySchemes:
@@ -114,125 +38,30 @@ components:
       description: "Use the JWT token obtained from login or registration."
 
   schemas:
+    # Request schemas
     RegisterRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          example: "John Doe"
-          description: "User's full name"
-        email:
-          type: string
-          format: email
-          example: "john.doe@example.com"
-          description: "User's unique email address"
-        password:
-          type: string
-          example: "Password123!"
-          description: "User's password"
-      required:
-        - name
-        - email
-        - password
-      example:
-        name: "John Doe"
-        email: "john.doe@example"
-        password: "Password123!"
-
+      $ref: './openapi/schemas/requests/RegisterRequest.yaml'
     LoginRequest:
-      type: object
-      properties:
-        email:
-          type: string
-          format: email
-          example: "example@email.com"
-        password:
-          type: string
-          example: "Password123!"
-      required:
-        - email
-        - password
-      example:
-        email: "example@email.com"
-        password: "Password123!"
+      $ref: './openapi/schemas/requests/LoginRequest.yaml'
+    RentalRequest:
+      $ref: './openapi/schemas/requests/RentalRequest.yaml'
 
+    # Response schemas
     AuthResponse:
-      type: object
-      properties:
-        token:
-          type: string
-          description: "JWT token for authentication"
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-      example:
-        token: "jwt"
+      $ref: './openapi/schemas/responses/AuthResponse.yaml'
+    RentalResponse:
+      $ref: './openapi/schemas/responses/RentalResponse.yaml'
+    RentalsResponse:
+      $ref: './openapi/schemas/responses/RentalsResponse.yaml'
 
-    ProblemDetail:
-      type: object
-      properties:
-        type:
-          type: string
-          format: uri
-          example: "https://example.com/probs/invalid-credentials"
-          description: "A URI reference of the problem type"
-        title:
-          type: string
-          example: "Invalid Credentials"
-          description: "The problem title"
-        status:
-          type: integer
-          example: 401
-          description: "HTTP status code for the problem"
-        detail:
-            type: string
-            example: "Invalid Credentials"
-            description: "The problem detail"
-        instance:
-            type: string
-            format: uri
-            example: "/api/auth/login"
-            description: "The problem instance request path"
-        timestamp:
-            type: string
-            format: date-time
-            example: "2023-10-01T12:00:00Z"
-            description: "The time at which the problem occurred"
-      example:
-        type: "https://example.com/probs/invalid-credentials"
-        title: "Invalid Credentials"
-        status: 401
-        detail: "Invalid Credentials"
-        instance: "/api/auth/login"
-        timestamp: "2023-10-01T12:00:00Z"
-
+    # DTO schemas
+    RentalDto:
+      $ref: './openapi/schemas/dto/RentalDto.yaml'
     UserDto:
-      type: object
-      properties:
-        id:
-          type: integer
-          example: 1
-          description: "Unique identifier for the user"
-        name:
-          type: string
-          example: "John Doe"
-          description: "User's full name"
-        email:
-          type: string
-          format: email
-          example: "example@email.com"
-          description: "User's unique email address"
-        createdAt:
-          type: string
-          format: date
-          example: "2023-10-01"
-          description: "Timestamp when the user was created"
-        updatedAt:
-          type: string
-          format: date
-          example: "2023-10-01"
-          description: "Timestamp when the user was last updated"
-      example:
-        id: 1
-        name: "John Doe"
-        email: "example@email.com"
-        createdAt: "2023-10-01"
-        updatedAt: "2023-10-01"
+      $ref: './openapi/schemas/dto/UserDto.yaml'
+
+    # Common schemas
+    ValidationErrorResponse:
+      $ref: './openapi/schemas/common/ValidationErrorResponse.yaml'
+    ProblemDetail:
+      $ref: './openapi/schemas/common/ProblemDetail.yaml'

@@ -1,4 +1,4 @@
-package oc.rental.rental_oc.dto.auth;
+package oc.rental.rental_oc.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

@@ -1,0 +1,9 @@
+type: object
+title: ValidationErrorResponse
+description: "Map of field names to validation error messages"
+example:
+  name: "Required field"
+  email: "Invalid format"
+  price: "Must be positive"
+additionalProperties:
+  type: string

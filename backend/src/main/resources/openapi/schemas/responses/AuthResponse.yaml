@@ -1,0 +1,12 @@
+type: object
+title: AuthResponse
+description: "Response containing the authentication token"
+example:
+  token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+properties:
+  token:
+    type: string
+    description: "JWT token for authentication"
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+required:
+  - token

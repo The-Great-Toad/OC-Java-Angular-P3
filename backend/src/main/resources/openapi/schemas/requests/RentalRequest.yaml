@@ -1,0 +1,45 @@
+type: object
+title: RentalRequest
+description: "Request schema for creating or updating a rental property"
+example:
+  name: "Beautiful apartment in Paris"
+  surface: 85.5
+  price: 1200.00
+  picture: "http://localhost:8080/uploads/apartment.jpg"
+  description: "Charming 2-bedroom apartment with balcony"
+properties:
+  name:
+    type: string
+    minLength: 1
+    maxLength: 255
+    example: "Beautiful apartment in Paris"
+    description: "Rental property name"
+  surface:
+    type: number
+    format: decimal
+    minimum: 0
+    maximum: 999999.99
+    example: 85.5
+    description: "Surface area in square meters"
+  price:
+    type: number
+    format: decimal
+    minimum: 0
+    maximum: 9999999.99
+    example: 1200.00
+    description: "Monthly rental price in euros"
+  picture:
+    type: string
+    format: binary
+    example: "http://localhost:8080/uploads/apartment.jpg"
+    description: "Property picture file"
+  description:
+    type: string
+    maxLength: 2000
+    example: "Charming 2-bedroom apartment with balcony"
+    description: "Detailed description of the rental property"
+required:
+  - name
+  - surface
+  - price
+  - picture

@@ -1,0 +1,20 @@
+type: object
+title: RentalsResponse
+description: "Response containing a list of all rentals"
+example:
+  rentals:
+    - id: 1
+      userId: 123
+      carId: 456
+      startDate: "2023-10-01T10:00:00Z"
+      endDate: "2023-10-05T10:00:00Z"
+      status: "active"
+      totalPrice: 150.00
+properties:
+  rentals:
+    type: array
+    items:
+      $ref: '../dto/RentalDto.yaml'
+    description: "List of all rentals"
+required:
+  - rentals

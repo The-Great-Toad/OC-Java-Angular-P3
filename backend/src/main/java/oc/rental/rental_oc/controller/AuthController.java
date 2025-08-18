@@ -2,9 +2,9 @@ package oc.rental.rental_oc.controller;
 
 import jakarta.validation.Valid;
 import oc.rental.rental_oc.dto.UserDto;
-import oc.rental.rental_oc.dto.auth.AuthResponse;
-import oc.rental.rental_oc.dto.auth.LoginRequest;
-import oc.rental.rental_oc.dto.auth.RegisterRequest;
+import oc.rental.rental_oc.dto.response.AuthResponse;
+import oc.rental.rental_oc.dto.request.LoginRequest;
+import oc.rental.rental_oc.dto.request.RegisterRequest;
 import oc.rental.rental_oc.service.AuthService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

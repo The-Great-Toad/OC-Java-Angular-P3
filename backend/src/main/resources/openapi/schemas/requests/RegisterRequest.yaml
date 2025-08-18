@@ -1,0 +1,25 @@
+type: object
+title: RegisterRequest
+description: Request schema for user registration
+example:
+  name: "John Doe"
+  email: "john.doe@example.com"
+  password: "Password123!"
+properties:
+  name:
+    type: string
+    example: "John Doe"
+    description: "User's full name"
+  email:
+    type: string
+    format: email
+    example: "john.doe@example.com"
+    description: "User's unique email address"
+  password:
+    type: string
+    example: "Password123!"
+    description: "User's password"
+required:
+  - name
+  - email
+  - password

@@ -1,5 +1,9 @@
 package oc.rental.rental_oc.config;
 
+import jakarta.validation.ConstraintViolationException;
+import oc.rental.rental_oc.exception.RentalException;
+import oc.rental.rental_oc.exception.RentalNotFoundException;
+import oc.rental.rental_oc.exception.StorageException;
 import oc.rental.rental_oc.exception.TokenGenerationException;
 import oc.rental.rental_oc.exception.TokenValidationException;
 import org.slf4j.Logger;
@@ -22,7 +26,6 @@ public class GlobalExceptionHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final String LOGGER_PREFIX = "[GlobalExceptionHandler]";
-    public static final String INVALID_CREDENTIALS = "Invalid Credentials";
     public static final String TIMESTAMP = "timestamp";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -36,12 +39,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(errors);
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException e) {
+        Map<String, String> errors = new HashMap<>();
+        e.getConstraintViolations().forEach(violation -> {
+            LOGGER.error("{} - Constraint violation: {} - {}", LOGGER_PREFIX, violation.getPropertyPath(), violation.getMessage());
+            errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+        });
+        return ResponseEntity.badRequest().body(errors);
+    }
+
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ProblemDetail handleBadCredentialsException(BadCredentialsException e) {
         LOGGER.error("{} - Bad Credentials : {}", LOGGER_PREFIX, e.getMessage());
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, INVALID_CREDENTIALS);
-        problemDetail.setTitle(INVALID_CREDENTIALS);
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+        problemDetail.setTitle("Invalid Credentials");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
@@ -53,6 +67,36 @@ public class GlobalExceptionHandler {
         LOGGER.error("{} - {}: {}", LOGGER_PREFIX, errorType, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         problemDetail.setTitle(errorType);
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RentalNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ProblemDetail handleRentalNotFoundException(RentalNotFoundException e) {
+        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        problemDetail.setTitle("Rental Not Found");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(RentalException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ProblemDetail handleRentalException(RentalException e) {
+        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+        problemDetail.setTitle("Rental Exception");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(StorageException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ProblemDetail handleStorageException(StorageException e) {
+        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+        problemDetail.setTitle("Storage Exception");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
