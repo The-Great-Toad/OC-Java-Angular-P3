@@ -10,6 +10,12 @@ import java.util.Objects;
 @Component
 public class RentalMapper {
 
+    /**
+     * Map Rental entity to RentalDto.
+     *
+     * @param rental the Rental entity to be mapped
+     * @return RentalDto containing the mapped data
+     */
     public RentalDto mapToRentalDto(Rental rental) {
         RentalDto rentalDto = new RentalDto()
                 .addId(rental.getId())
@@ -31,6 +37,13 @@ public class RentalMapper {
         return rentalDto;
     }
 
+    /**
+     * Map RentalRequest to Rental entity.
+     *
+     * @param rentalRequest the request containing the details of the rental to be created
+     * @param picturePath the path to the rental picture
+     * @return Rental entity populated with the request details
+     */
     public Rental mapToRental(RentalRequest rentalRequest, String picturePath) {
         return new Rental()
                 .addName(rentalRequest.name())
@@ -40,16 +53,17 @@ public class RentalMapper {
                 .addDescription(rentalRequest.description());
     }
 
-    public void updateRentalFromRequest(Rental rental, RentalRequest rentalRequest, String picturePath) {
+    /**
+     * Update an existing Rental entity with data from RentalRequest.
+     *
+     * @param rental the Rental entity to be updated
+     * @param rentalRequest the request containing the updated details of the rental
+     */
+    public void updateRentalFromRequest(Rental rental, RentalRequest rentalRequest) {
         rental
                 .addName(rentalRequest.name())
                 .addSurface(rentalRequest.surface())
                 .addPrice(rentalRequest.price())
                 .addDescription(rentalRequest.description());
-
-        // Ne met à jour la picture que si un nouveau fichier est fourni
-        if (picturePath != null) {
-            rental.addPicture(picturePath);
-        }
     }
 }

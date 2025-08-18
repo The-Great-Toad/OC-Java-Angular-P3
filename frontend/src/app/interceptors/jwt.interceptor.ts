@@ -12,7 +12,7 @@ export class JwtInterceptor implements HttpInterceptor {
   public intercept(request: HttpRequest<any>, next: HttpHandler) {
     /*************************************************************** */
     // TODO: remove following lines after API implementation completed
-    const useRealTokenUrls = ['api/auth/me', 'api/rentals'];
+    const useRealTokenUrls = ['api/auth/me', 'api/rentals', 'api/messages'];
     const noTokenUrls = ['api/auth/login', 'api/auth/register'];
     let token: string | null = 'jwt';
 

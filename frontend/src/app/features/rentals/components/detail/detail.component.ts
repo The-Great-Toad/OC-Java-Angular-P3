@@ -17,6 +17,7 @@ import { RentalsService } from '../../services/rentals.service';
 export class DetailComponent implements OnInit {
   public messageForm!: FormGroup;
   public rental: Rental | undefined;
+  public isRentalOwner: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -32,9 +33,10 @@ export class DetailComponent implements OnInit {
   public ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
 
-    this.rentalsService
-      .detail(id)
-      .subscribe((rental: Rental) => (this.rental = rental));
+    this.rentalsService.detail(id).subscribe((rental: Rental) => {
+      this.rental = rental;
+      this.isRentalOwner = this.sessionService.user?.id === rental.owner_id;
+    });
   }
 
   public back() {
@@ -48,19 +50,31 @@ export class DetailComponent implements OnInit {
       message: this.messageForm.value.message,
     } as MessageRequest;
 
-    this.messagesService
-      .send(message)
-      .subscribe((messageResponse: MessageResponse) => {
+    this.messagesService.send(message).subscribe({
+      next: (messageResponse: MessageResponse) => {
         this.initMessageForm();
         this.matSnackBar.open(messageResponse.message, 'Close', {
           duration: 3000,
         });
-      });
+      },
+      error: (error) => {
+        this.matSnackBar.open(error.error.message, 'Close', {
+          duration: 3000,
+        });
+      },
+    });
   }
 
   private initMessageForm() {
     this.messageForm = this.fb.group({
-      message: ['', [Validators.required, Validators.minLength(10)]],
+      message: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(10),
+          Validators.maxLength(2000),
+        ],
+      ],
     });
   }
 }
