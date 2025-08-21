@@ -32,7 +32,7 @@ collection:
     requestBody:
       required: true
       content:
-        application/json:
+        multipart/form-data:
           schema:
             $ref: '../schemas/requests/RentalRequest.yaml'
     responses:

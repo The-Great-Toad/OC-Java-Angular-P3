@@ -29,6 +29,10 @@ paths:
   /rentals/{id}:
     $ref: './openapi/paths/rentals.yaml#/item'
 
+  # Messages endpoints
+  /messages:
+    $ref: './openapi/paths/messages.yaml#/messages'
+
 components:
   securitySchemes:
     bearerAuth:

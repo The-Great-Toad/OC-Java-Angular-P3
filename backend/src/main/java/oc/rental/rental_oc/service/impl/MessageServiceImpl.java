@@ -7,13 +7,10 @@ import oc.rental.rental_oc.dto.response.MessageResponse;
 import oc.rental.rental_oc.entity.Message;
 import oc.rental.rental_oc.mapper.MessageMapper;
 import oc.rental.rental_oc.repository.MessageRepository;
-import oc.rental.rental_oc.service.AuthService;
 import oc.rental.rental_oc.service.MessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
-import java.security.Principal;
 
 @Service
 public class MessageServiceImpl implements MessageService {

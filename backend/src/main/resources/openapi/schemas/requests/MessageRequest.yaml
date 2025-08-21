@@ -1,0 +1,28 @@
+type: object
+title: MessageRequest
+description: Request schema for sending a message
+example:
+  rentalId: 1
+  userId: 2
+  message: "Hello, I would like to inquire about the rental."
+properties:
+  rentalId:
+    type: number
+    format: int64
+    minimum: 1
+    description: The rental ID associated with the message
+    example: 1
+  userId:
+    type: number
+    format: int64
+    minimum: 1
+    description: The user ID sending the message
+    example: 2
+  message:
+    type: string
+    description: The content of the message being sent
+    example: "Hello, I would like to inquire about the rental."
+required:
+  - rentalId
+  - userId
+  - message
