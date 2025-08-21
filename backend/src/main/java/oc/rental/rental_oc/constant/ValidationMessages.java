@@ -12,6 +12,7 @@ public final class ValidationMessages {
     public static final String RENTAL_NAME_LENGTH = "Name must be between 1 and 255 characters";
     public static final String RENTAL_PICTURE_LENGTH = "The picture must be between 1 and 255 characters";
     public static final String RENTAL_DESCRIPTION_LENGTH = "The description must be equal or below 2000 characters";
+    public static final String MESSAGE_MAX_LENGTH = "The message must be equal or below 2000 characters";
 
     // Authentication messages
     public static final String INVALID_CREDENTIALS = "Invalid credentials";

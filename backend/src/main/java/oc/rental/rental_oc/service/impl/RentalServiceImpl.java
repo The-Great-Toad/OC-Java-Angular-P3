@@ -62,10 +62,9 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public RentalDto getRental(Integer id) {
         LOGGER.debug("{} - Getting rental by id {}", LOG_PREFIX, id);
-        Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND));
-
+        Rental rental = getRentalIfExists(id);
         LOGGER.debug("{} - Found rental: {}", LOG_PREFIX, rental);
+
         return rentalMapper.mapToRentalDto(rental);
     }
 
@@ -109,11 +108,6 @@ public class RentalServiceImpl implements RentalService {
         LOGGER.debug("{} - Updating rental by id {} - Requested update: {}", LOG_PREFIX, id, rentalRequest);
 
         try {
-            String picturePath = null;
-            if (rentalRequest.picture() != null && !rentalRequest.picture().isEmpty()) {
-                picturePath = fileSystemStorageService.store(rentalRequest.picture());
-            }
-
             /* Retrieve rental and validate ownership */
             Rental rentalToUpdate = rentalRepository.findByIdAndOwnerUsername(id, principal.getName())
                     .orElseThrow(() -> {
@@ -123,7 +117,7 @@ public class RentalServiceImpl implements RentalService {
                         return new RentalException(ErrorMessages.RENTAL_UPDATE_UNAUTHORIZED);
                     });
 
-            rentalMapper.updateRentalFromRequest(rentalToUpdate, rentalRequest, picturePath);
+            rentalMapper.updateRentalFromRequest(rentalToUpdate, rentalRequest);
             Rental updatedRental = rentalRepository.save(rentalToUpdate);
 
             LOGGER.info("{} - Rental updated successfully with ID: {}", LOG_PREFIX, updatedRental.getId());
@@ -134,5 +128,11 @@ public class RentalServiceImpl implements RentalService {
             LOGGER.error(LOG_MESSAGE_FORMAT, LOG_PREFIX, errorMessage);
             throw new RentalException(errorMessage, e);
         }
+    }
+
+    @Override
+    public Rental getRentalIfExists(Integer id) {
+        return rentalRepository.findById(id)
+                .orElseThrow(() -> new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND));
     }
 }
