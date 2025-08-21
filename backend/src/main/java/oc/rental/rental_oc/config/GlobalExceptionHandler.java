@@ -51,7 +51,10 @@ public class GlobalExceptionHandler {
         Map<String, String> errors = new HashMap<>();
         e.getConstraintViolations().forEach(violation -> {
             String field = violation.getPropertyPath().toString();
-            field = field.substring(field.indexOf(".") + 1);
+            int dotIndex = field.indexOf(".");
+            if (dotIndex != -1) {
+                field = field.substring(dotIndex + 1);
+            }
             LOGGER.error("{} - Constraint violation: {} - {}", LOGGER_PREFIX, field, violation.getMessage());
             errors.put(field, violation.getMessage());
         });
@@ -61,10 +64,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
-        String message = String.format("Invalid value '%s' for parameter '%s'. %s", e.getValue(), e.getName(),
-                Objects.isNull(e.getRequiredType())
-                        ? ""
-                        : "Expected type: %s".formatted(e.getRequiredType().getSimpleName()));
+        Class<?> requiredType = e.getRequiredType();
+        String typeInfo = Objects.nonNull(requiredType)
+                ? "Expected type: %s".formatted(requiredType.getSimpleName())
+                : "";
+        String message = String.format("Invalid value '%s' for parameter '%s'. %s", e.getValue(), e.getName(), typeInfo);
         LOGGER.error(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, message);
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
