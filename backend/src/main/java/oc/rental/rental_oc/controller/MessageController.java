@@ -3,8 +3,10 @@ package oc.rental.rental_oc.controller;
 import jakarta.validation.Valid;
 import oc.rental.rental_oc.dto.request.MessageRequest;
 import oc.rental.rental_oc.dto.response.MessageResponse;
+import oc.rental.rental_oc.entity.User;
 import oc.rental.rental_oc.service.MessageService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,7 +23,8 @@ public class MessageController {
     }
 
     @PostMapping
-    public ResponseEntity<MessageResponse> createMessage(@Valid @RequestBody MessageRequest messageRequest) {
-        return ResponseEntity.ok(messageService.createMessage(messageRequest));
+    public ResponseEntity<MessageResponse> createMessage(@AuthenticationPrincipal User loggedUser,
+                                                         @Valid @RequestBody MessageRequest messageRequest) {
+        return ResponseEntity.ok(messageService.createMessage(loggedUser, messageRequest));
     }
 }

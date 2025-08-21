@@ -1,6 +1,8 @@
 package oc.rental.rental_oc.config;
 
 import jakarta.validation.ConstraintViolationException;
+import oc.rental.rental_oc.constant.ErrorMessages;
+import oc.rental.rental_oc.exception.MessageException;
 import oc.rental.rental_oc.exception.RentalException;
 import oc.rental.rental_oc.exception.RentalNotFoundException;
 import oc.rental.rental_oc.exception.StorageException;
@@ -27,6 +29,7 @@ public class GlobalExceptionHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     private static final String LOGGER_PREFIX = "[GlobalExceptionHandler]";
     public static final String TIMESTAMP = "timestamp";
+    public static final String LOG_MESSAGE_FORMAT = "{} - {}";
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -74,7 +77,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RentalNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ProblemDetail handleRentalNotFoundException(RentalNotFoundException e) {
-        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        LOGGER.info(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
         problemDetail.setTitle("Rental Not Found");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
@@ -84,7 +87,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RentalException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ProblemDetail handleRentalException(RentalException e) {
-        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        LOGGER.info(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
         problemDetail.setTitle("Rental Exception");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
@@ -94,9 +97,19 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StorageException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ProblemDetail handleStorageException(StorageException e) {
-        LOGGER.info("{} - {}", LOGGER_PREFIX, e.getMessage());
+        LOGGER.info(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         problemDetail.setTitle("Storage Exception");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MessageException.class)
+    public ProblemDetail handleMessageException(MessageException e) {
+        HttpStatus httpStatus = e.getMessage().contains(ErrorMessages.MESSAGE_DB_ERROR) ? HttpStatus.INTERNAL_SERVER_ERROR : HttpStatus.BAD_REQUEST;
+        LOGGER.error(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, e.getMessage());
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(httpStatus, e.getMessage());
+        problemDetail.setTitle("Message Exception");
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }

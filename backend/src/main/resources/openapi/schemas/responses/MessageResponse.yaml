@@ -2,11 +2,11 @@ type: object
 title: MessageResponse
 description: "Response containing the status of the message"
 example:
-  message: "Message send with success"
+  message: "Message sent with success"
 properties:
   message:
     type: string
     description: "A validation message"
-    example: "Message send with success"
+    example: "Message sent with success"
 required:
   - message

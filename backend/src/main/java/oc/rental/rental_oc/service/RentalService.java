@@ -4,6 +4,8 @@ import oc.rental.rental_oc.dto.RentalDto;
 import oc.rental.rental_oc.dto.request.RentalRequest;
 import oc.rental.rental_oc.dto.response.RentalResponse;
 import oc.rental.rental_oc.dto.response.RentalsResponse;
+import oc.rental.rental_oc.entity.Rental;
+import oc.rental.rental_oc.exception.RentalNotFoundException;
 
 import java.security.Principal;
 
@@ -40,4 +42,13 @@ public interface RentalService {
      * @return RentalResponse containing the update confirmation message
      */
     RentalResponse updateRental(Integer id, RentalRequest rentalRequest, Principal principal);
+
+    /**
+     * Retrieves a rental if it exists.
+     *
+     * @param id the ID of the rental to retrieve
+     * @return Rental if it exists
+     * @throws RentalNotFoundException if the rental does not exist
+     */
+    Rental getRentalIfExists(Integer id);
 }

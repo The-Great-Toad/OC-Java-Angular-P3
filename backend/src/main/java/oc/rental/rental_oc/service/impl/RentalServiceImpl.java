@@ -62,10 +62,9 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public RentalDto getRental(Integer id) {
         LOGGER.debug("{} - Getting rental by id {}", LOG_PREFIX, id);
-        Rental rental = rentalRepository.findById(id)
-                .orElseThrow(() -> new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND));
-
+        Rental rental = getRentalIfExists(id);
         LOGGER.debug("{} - Found rental: {}", LOG_PREFIX, rental);
+
         return rentalMapper.mapToRentalDto(rental);
     }
 
@@ -129,5 +128,11 @@ public class RentalServiceImpl implements RentalService {
             LOGGER.error(LOG_MESSAGE_FORMAT, LOG_PREFIX, errorMessage);
             throw new RentalException(errorMessage, e);
         }
+    }
+
+    @Override
+    public Rental getRentalIfExists(Integer id) {
+        return rentalRepository.findById(id)
+                .orElseThrow(() -> new RentalNotFoundException(ErrorMessages.RENTAL_NOT_FOUND));
     }
 }
