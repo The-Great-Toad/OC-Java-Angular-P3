@@ -25,9 +25,7 @@ public class UserMapper {
         return new User()
                 .addName(registerRequest.name())
                 .addEmail(registerRequest.email())
-                .addPassword(passwordEncoder.encode(registerRequest.password()))
-                .addCreationDate()
-                .addUpdateDate();
+                .addPassword(passwordEncoder.encode(registerRequest.password()));
     }
 
     /**

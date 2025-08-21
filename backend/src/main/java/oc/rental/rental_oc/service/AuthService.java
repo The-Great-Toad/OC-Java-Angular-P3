@@ -42,4 +42,12 @@ public interface AuthService extends UserDetailsService {
      * @return the user ID
      */
     Integer getUserIdByUsername(String username);
+
+    /**
+     * Retrieves a UserDto by its ID.
+     *
+     * @param id the ID of the user
+     * @return a UserDto containing user details
+     */
+    UserDto getUserById(Integer id);
 }

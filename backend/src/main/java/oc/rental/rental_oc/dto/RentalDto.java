@@ -117,47 +117,47 @@ public class RentalDto {
     }
 
     public RentalDto addId(Integer id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 
     public RentalDto addName(String name) {
-        this.name = name;
+        setName(name);
         return this;
     }
 
     public RentalDto addSurface(Double surface) {
-        this.surface = surface;
+        setSurface(surface);
         return this;
     }
 
     public RentalDto addPrice(BigDecimal price) {
-        this.price = price;
+        setPrice(price);
         return this;
     }
 
     public RentalDto addPicture(String picture) {
-        this.picture = picture;
+        setPicture(picture);
         return this;
     }
 
     public RentalDto addDescription(String description) {
-        this.description = description;
+        setDescription(description);
         return this;
     }
 
     public RentalDto addOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
+        setOwnerId(ownerId);
         return this;
     }
 
     public RentalDto addCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
+        setCreatedAt(createdAt);
         return this;
     }
 
     public RentalDto addUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
+        setUpdatedAt(updatedAt);
         return this;
     }
 }

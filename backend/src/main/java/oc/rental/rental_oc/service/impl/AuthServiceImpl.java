@@ -103,6 +103,20 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    public UserDto getUserById(Integer id) {
+        LOGGER.info("{} Retrieving user by ID: {}", LOGGER_PREFIX, id);
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> {
+                    LOGGER.warn("{} User not found with ID: {}", LOGGER_PREFIX, id);
+                    return new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);
+                });
+
+        LOGGER.info("{} User found: {}", LOGGER_PREFIX, user);
+        return userMapper.mapToUserDto(user);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if (name.equals(username)) {
             return org.springframework.security.core.userdetails.User
@@ -113,7 +127,10 @@ public class AuthServiceImpl implements AuthService {
         } else {
             return userRepository
                     .findByEmail(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND));
+                    .orElseThrow(() -> {
+                        LOGGER.warn("{} User not found with email: {}", LOGGER_PREFIX, username);
+                        return new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);
+                    });
         }
     }
 

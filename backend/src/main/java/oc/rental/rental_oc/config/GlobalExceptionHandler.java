@@ -14,14 +14,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -47,10 +50,27 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, String>> handleConstraintViolationException(ConstraintViolationException e) {
         Map<String, String> errors = new HashMap<>();
         e.getConstraintViolations().forEach(violation -> {
-            LOGGER.error("{} - Constraint violation: {} - {}", LOGGER_PREFIX, violation.getPropertyPath(), violation.getMessage());
-            errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+            String field = violation.getPropertyPath().toString();
+            field = field.substring(field.indexOf(".") + 1);
+            LOGGER.error("{} - Constraint violation: {} - {}", LOGGER_PREFIX, field, violation.getMessage());
+            errors.put(field, violation.getMessage());
         });
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ProblemDetail handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String message = String.format("Invalid value '%s' for parameter '%s'. %s", e.getValue(), e.getName(),
+                Objects.isNull(e.getRequiredType())
+                        ? ""
+                        : "Expected type: %s".formatted(e.getRequiredType().getSimpleName()));
+        LOGGER.error(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, message);
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Type Mismatch Error");
+        problemDetail.setProperty(TIMESTAMP, Instant.now());
+        return problemDetail;
     }
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -65,7 +85,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({TokenGenerationException.class, TokenValidationException.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ProblemDetail handleTokenGenerationException(Exception e) {
+    public ProblemDetail handleTokenException(Exception e) {
         String errorType = e instanceof TokenValidationException ? "Token Validation Error" : "Token Generation Error";
         LOGGER.error("{} - {}: {}", LOGGER_PREFIX, errorType, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
@@ -74,12 +94,13 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(RentalNotFoundException.class)
+    @ExceptionHandler({RentalNotFoundException.class, UsernameNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ProblemDetail handleRentalNotFoundException(RentalNotFoundException e) {
-        LOGGER.info(LOG_MESSAGE_FORMAT, LOGGER_PREFIX, e.getMessage());
+    public ProblemDetail handleNotFoundException(Exception e) {
+        String errorType = e instanceof RentalNotFoundException ? "Rental Not Found" : "User Not Found";
+        LOGGER.error("{} - {}: {}", LOGGER_PREFIX, errorType, e.getMessage());
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
-        problemDetail.setTitle("Rental Not Found");
+        problemDetail.setTitle(errorType);
         problemDetail.setProperty(TIMESTAMP, Instant.now());
         return problemDetail;
     }
