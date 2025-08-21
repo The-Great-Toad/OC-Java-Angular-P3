@@ -112,16 +112,8 @@ public class Rental {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -150,48 +142,33 @@ public class Rental {
                 .toString();
     }
 
-    public Rental addId(Integer id) {
-        this.id = id;
-        return this;
-    }
-
     public Rental addName(String name) {
-        this.name = name;
+        setName(name);
         return this;
     }
 
     public Rental addSurface(Double surface) {
-        this.surface = surface;
+        setSurface(surface);
         return this;
     }
 
     public Rental addPrice(BigDecimal price) {
-        this.price = price;
+        setPrice(price);
         return this;
     }
 
     public Rental addPicture(String picture) {
-        this.picture = picture;
+        setPicture(picture);
         return this;
     }
 
     public Rental addDescription(String description) {
-        this.description = description;
+        setDescription(description);
         return this;
     }
 
     public Rental addOwnerId(Integer ownerId) {
-        this.ownerId = ownerId;
-        return this;
-    }
-
-    public Rental addCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public Rental addUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+        setOwnerId(ownerId);
         return this;
     }
 }

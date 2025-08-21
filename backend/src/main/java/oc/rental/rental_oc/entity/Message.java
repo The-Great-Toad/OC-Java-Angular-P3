@@ -73,16 +73,8 @@ public class Message {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     @Override
@@ -120,16 +112,6 @@ public class Message {
 
     public Message addMessage(String message) {
         setMessage(message);
-        return this;
-    }
-
-    public Message addCreatedAt(LocalDateTime createdAt) {
-        setCreatedAt(createdAt);
-        return this;
-    }
-
-    public Message addUpdatedAt(LocalDateTime updatedAt) {
-        setUpdatedAt(updatedAt);
         return this;
     }
 }

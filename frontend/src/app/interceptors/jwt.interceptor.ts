@@ -12,18 +12,18 @@ export class JwtInterceptor implements HttpInterceptor {
   public intercept(request: HttpRequest<any>, next: HttpHandler) {
     /*************************************************************** */
     // TODO: remove following lines after API implementation completed
-    const useRealTokenUrls = ['api/auth/me', 'api/rentals', 'api/messages'];
-    const noTokenUrls = ['api/auth/login', 'api/auth/register'];
-    let token: string | null = 'jwt';
+    // const useRealTokenUrls = ['api/auth/me', 'api/rentals', 'api/messages'];
+    // const noTokenUrls = ['api/auth/login', 'api/auth/register'];
+    // let token: string | null = 'jwt';
 
-    if (useRealTokenUrls.some((url) => request.url.includes(url))) {
-      token = localStorage.getItem('token');
-    } else if (noTokenUrls.some((url) => request.url.includes(url))) {
-      token = null;
-    }
+    // if (useRealTokenUrls.some((url) => request.url.includes(url))) {
+    //   token = localStorage.getItem('token');
+    // } else if (noTokenUrls.some((url) => request.url.includes(url))) {
+    //   token = null;
+    // }
     /*************************************************************** */
 
-    // const token = localStorage.getItem('token'); // Uncomment when API ready
+    const token = localStorage.getItem('token'); // Uncomment when API ready
     if (token) {
       request = request.clone({
         setHeaders: {

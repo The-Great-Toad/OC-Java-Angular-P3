@@ -52,27 +52,27 @@ public class UserDto {
     }
 
     public UserDto addId(Integer id) {
-        this.id = id;
+        setId(id);
         return this;
     }
 
     public UserDto addName(String name) {
-        this.name = name;
+        setName(name);
         return this;
     }
 
     public UserDto addEmail(String email) {
-        this.email = email;
+        setEmail(email);
         return this;
     }
 
     public UserDto addCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
+        setCreatedAt(createdAt);
         return this;
     }
 
     public UserDto addUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
+        setUpdatedAt(updatedAt);
         return this;
     }
 

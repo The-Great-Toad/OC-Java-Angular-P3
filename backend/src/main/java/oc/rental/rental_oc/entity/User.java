@@ -75,18 +75,9 @@ public class User implements UserDetails, CredentialsContainer {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
 
     public User addName(String name) {
         setName(name);
@@ -100,26 +91,6 @@ public class User implements UserDetails, CredentialsContainer {
 
     public User addPassword(String password) {
         setPassword(password);
-        return this;
-    }
-
-    public User addCreatedAt(LocalDateTime createdAt) {
-        setCreatedAt(createdAt);
-        return this;
-    }
-
-    public User addUpdatedAt(LocalDateTime updatedAt) {
-        setUpdatedAt(updatedAt);
-        return this;
-    }
-
-    public User addCreationDate() {
-        setCreatedAt(LocalDateTime.now());
-        return this;
-    }
-
-    public User addUpdateDate() {
-        setUpdatedAt(LocalDateTime.now());
         return this;
     }
 
@@ -160,7 +131,6 @@ public class User implements UserDetails, CredentialsContainer {
                 .add("id=" + id)
                 .add("name='" + name + "'")
                 .add("email='" + email + "'")
-                .add("password='" + password + "'")
                 .add("createdAt=" + createdAt)
                 .add("updatedAt=" + updatedAt)
                 .toString();
