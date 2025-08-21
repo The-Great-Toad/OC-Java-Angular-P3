@@ -33,6 +33,10 @@ paths:
   /messages:
     $ref: './openapi/paths/messages.yaml#/messages'
 
+  # User endpoints
+  /user/{id}:
+    $ref: './openapi/paths/user.yaml#/getUserById'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -49,6 +53,8 @@ components:
       $ref: './openapi/schemas/requests/LoginRequest.yaml'
     RentalRequest:
       $ref: './openapi/schemas/requests/RentalRequest.yaml'
+    MessageRequest:
+      $ref: './openapi/schemas/requests/MessageRequest.yaml'
 
     # Response schemas
     AuthResponse:
@@ -57,6 +63,8 @@ components:
       $ref: './openapi/schemas/responses/RentalResponse.yaml'
     RentalsResponse:
       $ref: './openapi/schemas/responses/RentalsResponse.yaml'
+    MessageResponse:
+        $ref: './openapi/schemas/responses/MessageResponse.yaml'
 
     # DTO schemas
     RentalDto:

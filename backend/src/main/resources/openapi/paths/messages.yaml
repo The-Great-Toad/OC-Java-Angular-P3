@@ -1,10 +1,12 @@
 messages:
   post:
+    tags:
+      - messages
     summary: Create a new message
     description: A user can send a message to a rental owner.
     operationId: createMessage
-    tags:
-      - messages
+    security:
+      - bearerAuth: [ ]
     requestBody:
       required: true
       content:
