@@ -1,0 +1,57 @@
+services:
+    mysql_db:
+        image: mysql:8.0
+        container_name: oc_rentals_mysql
+        restart: always
+        ports:
+            - '3307:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: rootpassword
+            MYSQL_DATABASE: oc_rental
+            MYSQL_USER: app_user
+            MYSQL_PASSWORD: app_password
+        # healthcheck:
+        #     test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+        #     timeout: 20s
+        #     retries: 10
+        volumes:
+            - mysql_data:/var/lib/mysql
+        networks:
+            - oc_rental_network
+
+    backend:
+        build: ./backend
+        container_name: oc_rental_backend
+        ports:
+            - '8080:8080'
+        environment:
+            - MYSQL_HOST=mysql_db
+            - MYSQL_PORT=3306
+            - MYSQL_USER=root
+            - MYSQL_PWD=rootpassword
+            - MYSQL_DB=oc_rental
+            - JWT_SECRET_KEY=64caracteres3456789012345678901234567890123456789012345678901234
+            - CORS_ALLOWED_ORIGINS=http://localhost:4200,http://localhost
+        depends_on:
+            - mysql_db
+            # mysql_db:
+            #     condition: service_healthy
+        networks:
+            - oc_rental_network
+
+    frontend:
+        build: ./frontend
+        container_name: oc_rental_frontend
+        ports:
+            - '80:80'
+        depends_on:
+            - backend
+        networks:
+            - oc_rental_network
+
+volumes:
+    mysql_data:
+
+networks:
+    oc_rental_network:
+        driver: bridge

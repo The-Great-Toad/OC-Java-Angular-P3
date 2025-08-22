@@ -4,16 +4,15 @@ import { Observable } from 'rxjs';
 import { Rental } from 'src/app/features/rentals/interfaces/rental.interface';
 import { RentalResponse } from '../interfaces/api/rentalResponse.interface';
 import { RentalsResponse } from '../interfaces/api/rentalsResponse.interface';
-
+import { environment } from 'src/environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RentalsService {
+  private pathService = `${environment.baseUrl}/rentals`;
 
-  private pathService = 'api/rentals';
-
-  constructor(private httpClient: HttpClient) { }
+  constructor(private httpClient: HttpClient) {}
 
   public all(): Observable<RentalsResponse> {
     return this.httpClient.get<RentalsResponse>(this.pathService);
@@ -28,6 +27,9 @@ export class RentalsService {
   }
 
   public update(id: string, form: FormData): Observable<RentalResponse> {
-    return this.httpClient.put<RentalResponse>(`${this.pathService}/${id}`, form);
+    return this.httpClient.put<RentalResponse>(
+      `${this.pathService}/${id}`,
+      form
+    );
   }
 }
