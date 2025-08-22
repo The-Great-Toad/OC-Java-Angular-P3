@@ -1,6 +1,5 @@
 package oc.rental.rental_oc.service.impl;
 
-import jakarta.annotation.PostConstruct;
 import oc.rental.rental_oc.constant.ErrorMessages;
 import oc.rental.rental_oc.constant.ValidationMessages;
 import oc.rental.rental_oc.dto.UserDto;
@@ -14,7 +13,6 @@ import oc.rental.rental_oc.service.AuthService;
 import oc.rental.rental_oc.service.JwtService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,29 +27,16 @@ public class AuthServiceImpl implements AuthService {
     private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
     private static final String LOGGER_PREFIX = "[AuthService]";
 
-    @Value("${spring.security.user.name}")
-    private String name;
-    @Value("${spring.security.user.password}")
-    private String password;
-    @Value("${spring.security.user.roles}")
-    private String roles;
-
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private String encodedPassword;
 
     public AuthServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-    }
-
-    @PostConstruct
-    public void init() {
-        encodedPassword = passwordEncoder.encode(password);
     }
 
     @Override
@@ -118,20 +103,12 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        if (name.equals(username)) {
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(name)
-                    .password(encodedPassword)
-                    .roles(roles.split(","))
-                    .build();
-        } else {
-            return userRepository
-                    .findByEmail(username)
-                    .orElseThrow(() -> {
-                        LOGGER.warn("{} User not found with email: {}", LOGGER_PREFIX, username);
-                        return new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);
-                    });
-        }
+        return userRepository
+                .findByEmail(username)
+                .orElseThrow(() -> {
+                    LOGGER.warn("{} User not found with email: {}", LOGGER_PREFIX, username);
+                    return new UsernameNotFoundException(ErrorMessages.USER_NOT_FOUND);
+                });
     }
 
     private AuthResponse generateToken(User user) {

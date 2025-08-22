@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 public class OpenApiConfig {
@@ -15,7 +15,7 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() throws IOException {
         ClassPathResource resource = new ClassPathResource("openapi.yaml");
-        String content = Files.readString(resource.getFile().toPath());
+        String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
         return new OpenAPIV3Parser().readContents(content).getOpenAPI();
     }
 }
